@@ -1,25 +1,25 @@
 async function getMatchData() {
+    try {
+        const response = await fetch("https://api.cricapi.com/v1/matches?apikey=239dc18b-bc3e-4388-80b4-260242136654&offset=0");
+        const data = await response.json();
 
-    return await fetch("https://api.cricapi.com/v1/currentMatches?apikey=bef4b6e4-0fbb-4e11-9410-6e16e2ca5ab1&offset=0")
-        .then(data => data.json())
-        .then(data => {
-            if (data.status != "success")return;
+        if (data.status !== "success") return [];
 
-            const matchesList = data.data;
+        const matchesList = data.data;
 
-            if(!matchesList)return [];
-            
-            //add your api key from cricketdata.org
-            const relevantData = matchesList.filter(match => match.series_id == "{your_api_key}").map(match => `${match.name}, ${match.status}`);
+        if (!matchesList) return [];
 
-            console.log({relevantData});
+        const relevantData = matchesList.filter(match => match.status).map(match => `${match.name}, ${match.status}`);
 
-            document.getElementById("matches").innerHTML = relevantData.map(match => `<li>${match} </li>`).join('');
+        console.log({ relevantData });
 
-            return relevantData;
+        document.getElementById("matches").innerHTML = relevantData.map(match => `<li>${match}</li>`).join('');
 
-        })
-        .catch(e => console.log(e));
+        return relevantData;
+    } catch (e) {
+        console.log(e);
+        return [];
+    }
 }
 
 getMatchData();
